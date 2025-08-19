@@ -1,0 +1,2 @@
+# This file ensures the cache directory is created in git
+# The actual index files (index.faiss, meta.json) will be generated at runtime

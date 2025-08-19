@@ -1,0 +1,178 @@
+{
+  "chunks": [
+    {
+      "text": "# Background",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background"
+    },
+    {
+      "text": "## What is this - An AI chatbot that has been trained on Jonty's data and will provide you with facts from his supporting documents - If you would like help setting up a similar chatbot, I would be very keen to help, please feel free to contact me!",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > What is this"
+    },
+    {
+      "text": "## Family - Family of 4 - younger sister Zaria (20), studies Mechatronic Engineering, she is annoyingly good at most things - dad works in mining, electronic engineer, we get on very well - I have what feel like endless cousins, all of which are incredible role models and are scattered across the globe - I live with my closest cousin in age, Alex, he studies Mechatronic Engineering at SU and is an incredibly bright guy... although he does support Arsenal.",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Family"
+    },
+    {
+      "text": "## Friends - Very sociable - Love playing padel, hiking, golf, tennis - Love watching rugby, cricket and tennis - Lots of friends studying in Stellenbosch with me",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Friends"
+    },
+    {
+      "text": "## Sport - I love any sport particularly with a ball, I spend a lot of time playing tennis and padel socially - I played first side Hockey in high school where I played centre back - I played first side Cricket where I was a medium fast bowler - I am roughly a 10 handicap in golf - I love water-sports and have grown up wakeboarding and sailing",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Sport"
+    },
+    {
+      "text": "## Ideal job - I would love to be part of creating something that makes a positive impact, I know that is generic, however I feel there is a massive potential for it in South Africa",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Ideal job"
+    },
+    {
+      "text": "## Biggest Fear - I am scared of not chasing any of my dreams, deep down I am a creator and I fear just fitting into the mold",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Biggest Fear"
+    },
+    {
+      "text": "## Where I want to live - I would love to settle in the Western Cape at some point, however I am very keen to travel whilst I am young and am open to work anywhere in the world",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Where I want to live"
+    },
+    {
+      "text": "## Relationship - I am currently in a relationship with a lady who I have absolutely no idea how I managed to land",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Relationship"
+    },
+    {
+      "text": "## Origin - my origin is English, Irish and South African - Originally from pretoria - Moved to stellenbosch to study in 2022 - I went to Cornwall Hill College for Primary and High School and loved my time there",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Origin"
+    },
+    {
+      "text": "## Bragging - One of 9 out of an original class of 70 to make it to 4th year without failing any modules - One of ~25 out of ~2900 to be offered a job as a tech graduate at Investec for 2026 - What I am most proud of, in grade 8 I had a 1700 rating in chess",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Bragging"
+    },
+    {
+      "text": "## Volunteering - Stone 3 impact, reaction timer workshop. https://www.linkedin.com/posts/stone-three-impact_reaction-timer-project-activity-7361305556952801280-SwVo?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzrd08BsV1MmvlFq1QN27BCmfQhRr_-wj4 - Building kennels with Engineering Without Borders at the Animal Welfare Centre in Stellenbosch, although I did spent most of my time entertaining the doggos",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Volunteering"
+    },
+    {
+      "text": "## Random - I have a love for South Africa, and really feel it has a great potential! - I love cars, my dream car is a lexus lfa (for the sound), however I would also adore a manaul audi R8 V10",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Random"
+    },
+    {
+      "text": "## Side projects - Teaching Agents to play soccer using Reinforcement Learning and pygame in python - \"Elon Analyser\" - A web-app that analyses Elons last 5 tweets, and latest related news articles using the twitter and a news API, then passes them through a sentiment model and based on the sentiment score either buys or sells tesla shares via the Alpaca trading API - Putt-Path-Analyser - A opencv based react native app that track a user putting golf balls and keeps track of the percentage that miss left and miss right and then informs the user of these statistics - Item-Pricer - Take a photo of a second hand item and fill in some details and a abitious, conservating and normal price estimate for what you can sell the item are returned after scraping ebay and facebook marketplace (this is tricky and support may have stopped by now) - Find some of my other projects on my CV - Automated classification of whale vocalisations using fast fourier transforms, mfccs for feature extraction and Hidden Markov models for classification",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Side projects"
+    },
+    {
+      "text": "## Tech Stack - Confident : Python, c/c++, R - Average : Javascript framework of the week (worked with: react, react native, vue, next, node) - Entry Level : Kotlin, Typescript, html, anything on the front end (vibe code in this regard)",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Tech Stack"
+    },
+    {
+      "text": "## Controversy - Android over Apple, I like the developer mode as well as the fact that when I was young I could get free games ... allegedly",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Controversy"
+    },
+    {
+      "text": "## Hobbies and Money - I used to make a little bit of money from drone photography (factory roof inspection) dji phantom 4, and dji mavic - I used to build, fly ... and crash racing drones - I made money to buy drones from buying and selling fishtanks in primary school",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Hobbies and Money"
+    },
+    {
+      "text": "## Direction - At the moment I am leaning toward studying a research masters at Stellenbosch University, likely toward some field relating to AI, ML and machine vision - I am always open and enthusiastic to discuss creative and business opportunities",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/background.md",
+      "heading": "Background > Direction"
+    },
+    {
+      "text": "# Resume / CV",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV"
+    },
+    {
+      "text": "## SUMMARY As a technology enthusiast with strong interests in data science, software development, and technology, I am always looking for challenging problems to solve. I enjoy connecting with people and value collaboration. I have a massive hunger to learn and am always busy dreaming or working on some project. I am fascinated by the field of AI and love finding creative ways to get the best out of it. I enjoy teaching and feel giving back is very important, currently in the process of working with the wonderful team at Stone Three Impact as a volunteer where I created an arduino powered reaction timer workshop. NOTE: Stone Three and Stone Three Impact are very different! ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > SUMMARY"
+    },
+    {
+      "text": "## SKILLS - Python, C/C++, R, git - CAD Design (2D/3D) - Electronic Design (STM) - Media Ads and Analytics - 3D Printing ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > SKILLS"
+    },
+    {
+      "text": "## INTERESTS - AI: Specifically Agentic (MCP/RAG) and Camera Vision - Web Application Design - Data Modelling and Inference - Chess - Sports: padel and golf, cycling and watersports - Love for travel and exploration ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > INTERESTS"
+    },
+    {
+      "text": "## EXPERIENCE",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EXPERIENCE"
+    },
+    {
+      "text": "### Summer Research Intern | Stone3 | Somerset West **Nov 2024 – Jan 2025** - Researched bubble behaviors and interactions with pulp sensors in flotation systems. - Used high-speed video analysis and Machine Learning algorithms to investigate bubble size, velocity, and deviations. - Contributed to advancements in mineral recovery and process control sector. - Reference: Bernard Coetzee, 082 832 5040",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EXPERIENCE > Summer Research Intern | Stone3 | Somerset West"
+    },
+    {
+      "text": "### Mathematics Tutor | Stellenbosch - 1st and 2nd Year IT mathematics - 2nd year engineering math assistant (EM242)",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EXPERIENCE > Mathematics Tutor | Stellenbosch"
+    },
+    {
+      "text": "### Hockey Coach | CHiPPAs Hockey | Centurion **Jan 2019 – Dec 2019** - Coached young children on the basics of hockey technique. - Engaged with parents and guardians, keeping them informed of their child's progress and discussing ways to support their development in sport. ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EXPERIENCE > Hockey Coach | CHiPPAs Hockey | Centurion"
+    },
+    {
+      "text": "## EDUCATION",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EDUCATION > Hockey Coach | CHiPPAs Hockey | Centurion"
+    },
+    {
+      "text": "### Stellenbosch University | Stellenbosch, WC **2025** Bachelor of Engineering (BEng): Electric and Electronic Engineering (Data Engineering Focus) - Average Grade > 70% - Coursework in Mathematical Statistics, Computer Science, and Electronic Design - Participation in social sports: SU Squash and Hockey Club",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EDUCATION > Stellenbosch University | Stellenbosch, WC"
+    },
+    {
+      "text": "### Cornwall Hill College | Centurion, GP **2021** - Average Grade 86% - Prefect (Student leadership) , head of house - 1st Team Cricket & Hockey ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > EDUCATION > Cornwall Hill College | Centurion, GP"
+    },
+    {
+      "text": "## PROJECTS - **Solar Panel Monitor (3rd Year Electronic-Design Project)** Developed a solar panel monitor on STM boards that calculates the maximum power point and alerts users when panels require cleaning, optimizing panel efficiency. - **Computer Science (EPI-Use Labs)** Developed a secure web app as part of a team using Vue.js and Python, integrating the PWNED API to notify users of personal data breaches. Provided alerts and security recommendations. - **AI Financial Assistant (Investec Tech Explore 2025)** Selected as one of 50 out of ±3000 applicants. My group created an agentic AI financial assistant using gpt-4o and MCP tools. This allowed the model to access a user’s data to provide advice or execute trades. I handled the MCP tool creation. - **FPV Drone and 3D Printer** Personally built an FPV drone and a 3D printer. ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > PROJECTS > Cornwall Hill College | Centurion, GP"
+    },
+    {
+      "text": "## CERTIFICATIONS - Golden Key Honors Society Member - The Complete Digital Marketing Course (Udemy) - ICDL (International Computer Driver’s License) - Category R Skippers License - IEB CAD certificate - Rescue Skippers Course - IPMA (Project Management Certification) - Category EB Drivers License (Motor Vehicle and Trailer) ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > CERTIFICATIONS > Cornwall Hill College | Centurion, GP"
+    },
+    {
+      "text": "## CONTACT - Phone: 0714631264 - Email: jontyrule03@gmail.com - Location: Stellenbosch, Western Province, South Africa - Instagram: jonty_rule",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/cv.md",
+      "heading": "Resume / CV > CONTACT > Cornwall Hill College | Centurion, GP"
+    },
+    {
+      "text": "# Reference Letter **Stone Three Digital (Pty) Ltd** 24 Gardner Williams Avenue Paardevlei Somerset West 7130 **Date:** 24-Jul-2025 ---",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/reference_letter.md",
+      "heading": "Reference Letter"
+    },
+    {
+      "text": "## Reference of Vacation Work for Jonty Rule To whom it may concern, I am delighted to write this reference for Jonty Rule, who was directly involved in our Pulp Sensor and Productivity Monitoring projects at Stone Three. As a Process Data Analyst and Product Owner at Stone Three - a leading South African industrial IoT and data analytics firm specialising in mining and mineral processing - my role has allowed me to work with many high-calibre individuals. Jonty stands out as among the most eager, capable, and collaborative contributors I’ve encountered. From the outset of his engagement, Jonty demonstrated a keen enthusiasm for his work, consistently going above and beyond what was expected of him. He quickly adapted to complex project contexts involving smart sensor data analytics and mineral processing, showing both technical aptitude and a willingness to engage with unfamiliar topics. One of Jonty’s most impressive qualities is his natural inclination towards teamwork and inclusive collaboration. During our joint projects, he took the initiative to involve colleagues from multiple departments, ensuring all participants felt heard and were able to contribute meaningfully. This collaborative atmosphere, fostered by Jonty's leadership, directly improved project outcomes and morale. Jonty’s professionalism also shone through in his approach to communication. On occasions where miscommunications or misunderstandings arose - inevitable in fast-paced technical environments - Jonty addressed them proactively and tactfully. He would clarify objectives, recalibrate team expectations, and implement solutions promptly, minimizing disruption and promoting a culture of continuous improvement. In summary, Jonty Rule is an asset to any process engineering team. His technical competence, willingness to take initiative, and exemplary interpersonal skills set him apart. I confidently recommend him for any future opportunities and am certain he will excel in any challenging and collaborative environment. Should you require any additional information, please do not hesitate to contact me. --- **Kind regards,** Barend Coetzee Process Data Scientist (Product Management & Technical Services) 082 832 5040 https://www.linkedin.com/in/bernard-coetzee-6b9580b8/",
+      "source": "/Users/jontyrule/Ubundi/personal-codex-agent/data/reference_letter.md",
+      "heading": "Reference Letter > Reference of Vacation Work for Jonty Rule"
+    }
+  ],
+  "count": 34,
+  "dimension": 384,
+  "model_name": "all-MiniLM-L6-v2",
+  "embedding_dim": 384
+}

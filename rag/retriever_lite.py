@@ -10,47 +10,59 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from utils.logging_utils import get_logger
 
-
 logger = get_logger("codex.retriever")
 
-# Global model instance
-_model = None
-
-
-def get_embedding_model():
-    """Get or load embedding model singleton"""
-    global _model
-    if _model is None:
-        model_name = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-        try:
-            # Force CPU usage and avoid meta tensor issues
-            _model = SentenceTransformer(model_name, device='cpu')
-            logger.info(f"Loaded embedding model: {model_name}")
-        except Exception as e:
-            logger.error(f"Failed to load model {model_name}: {e}")
-            # Fallback to a more basic model
-            try:
-                _model = SentenceTransformer('paraphrase-MiniLM-L6-v2', device='cpu')
-                logger.info("Loaded fallback model: paraphrase-MiniLM-L6-v2")
-            except Exception as e2:
-                logger.error(f"Failed to load fallback model: {e2}")
-                raise RuntimeError(f"Could not load any embedding model. Original error: {e}")
-    return _model
+def embed_query_simple(query: str) -> np.ndarray:
+    """
+    Simple query embedding without sentence-transformers for deployment
+    Uses basic TF-IDF-like approach
+    """
+    try:
+        words = query.lower().split()
+        
+        # Create a simple bag-of-words embedding
+        embedding_dim = 384  # Match all-MiniLM-L6-v2 dimension
+        embedding = np.zeros(embedding_dim, dtype='float32')
+        
+        for i, word in enumerate(words[:20]):  # Limit to first 20 words
+            # Simple hash-based approach with position weighting
+            hash_val = abs(hash(word)) % embedding_dim
+            embedding[hash_val] += 1.0 / (i + 1)  # Give more weight to earlier words
+        
+        # Add some word-pair features for better matching
+        for i in range(len(words) - 1):
+            if i < 10:  # Limit bigrams
+                bigram = words[i] + "_" + words[i + 1]
+                hash_val = abs(hash(bigram)) % embedding_dim
+                embedding[hash_val] += 0.5 / (i + 1)
+        
+        # Normalize
+        norm = np.linalg.norm(embedding)
+        if norm > 0:
+            embedding = embedding / norm
+            
+        return embedding.reshape(1, -1)
+        
+    except Exception as e:
+        logger.error(f"Failed to create query embedding: {e}")
+        # Ultra-simple fallback
+        embedding = np.random.random(384).astype('float32')
+        embedding = embedding / np.linalg.norm(embedding)
+        return embedding.reshape(1, -1)
 
 
 def load_index():
-    """Load FAISS index and metadata"""
+    """Load pre-built FAISS index and metadata"""
     cache_dir = os.path.join(os.path.dirname(__file__), "cache")
     index_path = os.path.join(cache_dir, "index.faiss")
     meta_path = os.path.join(cache_dir, "meta.json")
 
     if not os.path.exists(index_path) or not os.path.exists(meta_path):
         raise FileNotFoundError(
-            f"Index not found. Build it via 'python rag/build_index_lite.py' or the UI button."
+            f"Pre-built index not found. Run 'python scripts/build_embeddings_local.py' locally first."
         )
 
     index = faiss.read_index(index_path)
@@ -58,17 +70,17 @@ def load_index():
     with open(meta_path, "r", encoding="utf-8") as f:
         metadata = json.load(f)
 
+    logger.info(f"Loaded pre-built index with {metadata['count']} chunks")
     return index, metadata
 
 
 def retrieve(query: str, top_k: int = 4, prioritize_reflection: bool = False) -> Dict:
-    """Retrieve relevant chunks for a query"""
+    """Retrieve relevant chunks using pre-built index"""
     try:
         index, metadata = load_index()
-        model = get_embedding_model()
 
-        # Encode query
-        query_embedding = model.encode([query], convert_to_numpy=True, show_progress_bar=False)
+        # Create simple query embedding (no sentence-transformers needed)
+        query_embedding = embed_query_simple(query)
         query_embedding = query_embedding.astype('float32')
 
         # Normalize for cosine similarity

@@ -12,11 +12,11 @@ venv/
 # Streamlit
 .streamlit/
 
-# RAG cache artifacts (built at runtime)
-rag/cache/*.faiss
-rag/cache/*.json
-rag/cache/index.faiss
-rag/cache/meta.json
+# RAG cache - keep pre-built files for deployment
+rag/cache/*.npy
+!rag/cache/index.faiss
+!rag/cache/meta.json
+!rag/cache/.gitkeep
 
 # VSCode
 .vscode/

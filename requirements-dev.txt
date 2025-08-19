@@ -1,5 +1,6 @@
-# Requirements for deployment (no embedding model needed)
+# Requirements for local development (includes embedding model)
 streamlit==1.36.0
+sentence-transformers==2.7.0
 groq>=0.4.0
 faiss-cpu==1.8.0.post1
 PyYAML==6.0.1
