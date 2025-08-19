@@ -1,104 +1,127 @@
 from __future__ import annotations
 
 import os
-import sys
 import json
-from typing import List, Dict
+import sys
+from typing import Dict, List
 
-# Add parent directory to path so we can import utils
+# Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import faiss  # type: ignore
+import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from utils.loader import load_markdown_files
-from rag.splitter import split_markdown
 from utils.logging_utils import get_logger
+from rag.splitter import chunk_markdown
 
 
-logger = get_logger("codex.index")
-
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-CACHE_DIR = os.path.join(ROOT_DIR, "rag", "cache")
-INDEX_PATH = os.path.join(CACHE_DIR, "index.faiss")
-META_PATH = os.path.join(CACHE_DIR, "meta.json")
+logger = get_logger("codex.build_index")
 
 
-def _get_embedding_model() -> SentenceTransformer:
-    """Load lightweight sentence transformer model."""
+def load_embedding_model():
+    """Load embedding model with error handling for deployment"""
     model_name = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-    logger.info(f"Loading embedding model: {model_name}")
-    return SentenceTransformer(model_name)
+    try:
+        # Force CPU usage and avoid meta tensor issues
+        model = SentenceTransformer(model_name, device='cpu')
+        logger.info(f"Loaded embedding model: {model_name}")
+        return model
+    except Exception as e:
+        logger.error(f"Failed to load model {model_name}: {e}")
+        # Fallback to a more basic model
+        try:
+            model = SentenceTransformer('paraphrase-MiniLM-L6-v2', device='cpu')
+            logger.info("Loaded fallback model: paraphrase-MiniLM-L6-v2")
+            return model
+        except Exception as e2:
+            logger.error(f"Failed to load fallback model: {e2}")
+            raise RuntimeError(f"Could not load any embedding model. Original error: {e}")
 
 
 def build_index() -> Dict:
-    os.makedirs(CACHE_DIR, exist_ok=True)
+    """Build FAISS index from markdown files in data/ directory"""
+    logger.info("Building index...")
 
-    # Load docs
-    md_files = load_markdown_files()
-    if not md_files:
-        raise RuntimeError("No markdown files found in data/. Add .md files and retry.")
+    # Ensure cache directory exists
+    cache_dir = os.path.join(os.path.dirname(__file__), "cache")
+    os.makedirs(cache_dir, exist_ok=True)
 
-    # Chunk
-    all_chunks: List[Dict] = []
-    for path, text in md_files:
-        chunks = split_markdown(text, source_path=path)
+    # Load documents
+    docs = load_markdown_files()
+    logger.info(f"Loaded {len(docs)} documents")
+
+    if not docs:
+        raise ValueError("No documents found in data/ directory")
+
+    # Chunk all documents
+    all_chunks = []
+    for doc in docs:
+        chunks = chunk_markdown(doc["content"], doc["path"])
         all_chunks.extend(chunks)
 
-    if not all_chunks:
-        raise RuntimeError("No chunks generated from data/. Check your markdown content.")
+    logger.info(f"Created {len(all_chunks)} chunks")
 
-    # Embed with lightweight model
-    model = _get_embedding_model()
-    texts = [c["text"] for c in all_chunks]
-    logger.info(f"Embedding {len(texts)} chunks...")
-    
-    # Encode in batches to save memory
+    if not all_chunks:
+        raise ValueError("No chunks created from documents")
+
+    # Load embedding model
+    model = load_embedding_model()
+
+    # Create embeddings in batches to avoid memory issues
     batch_size = 32
-    all_embeddings = []
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i:i + batch_size]
-        embeddings = model.encode(batch, convert_to_numpy=True, normalize_embeddings=True)
-        all_embeddings.append(embeddings)
-    
-    vecs = np.vstack(all_embeddings)
-    
+    embeddings = []
+
+    for i in range(0, len(all_chunks), batch_size):
+        batch = all_chunks[i:i + batch_size]
+        batch_texts = [chunk["text"] for chunk in batch]
+
+        try:
+            batch_embeddings = model.encode(batch_texts, convert_to_numpy=True, show_progress_bar=False)
+            embeddings.extend(batch_embeddings)
+            logger.info(f"Processed batch {i//batch_size + 1}/{(len(all_chunks) + batch_size - 1)//batch_size}")
+        except Exception as e:
+            logger.error(f"Failed to encode batch {i//batch_size + 1}: {e}")
+            raise
+
+    embeddings = np.array(embeddings).astype('float32')
+    logger.info(f"Created embeddings shape: {embeddings.shape}")
+
     # Build FAISS index
-    dim = vecs.shape[1]
-    index = faiss.IndexFlatIP(dim)  # Inner product for normalized embeddings
-    index.add(vecs.astype('float32'))
+    dimension = embeddings.shape[1]
+    index = faiss.IndexFlatIP(dimension)  # Inner product (cosine similarity)
+
+    # Normalize embeddings for cosine similarity
+    faiss.normalize_L2(embeddings)
+    index.add(embeddings)
 
     # Save index and metadata
-    faiss.write_index(index, INDEX_PATH)
+    index_path = os.path.join(cache_dir, "index.faiss")
+    meta_path = os.path.join(cache_dir, "meta.json")
 
-    meta = {
-        "dimension": dim,
+    faiss.write_index(index, index_path)
+
+    metadata = {
+        "chunks": all_chunks,
         "count": len(all_chunks),
-        "model": os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
-        "chunks": [
-            {
-                "text": c["text"],
-                "source": os.path.relpath(c["source"], ROOT_DIR),
-                "heading": c["heading"],
-            }
-            for c in all_chunks
-        ],
+        "dimension": dimension,
+        "model": model.get_sentence_embedding_dimension()
     }
-    with open(META_PATH, "w", encoding="utf-8") as f:
-        json.dump(meta, f, ensure_ascii=False)
 
-    logger.info(f"Index built: {INDEX_PATH} with {len(all_chunks)} vectors")
-    return meta
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2, ensure_ascii=False)
 
+    logger.info(f"Index saved to {index_path}")
+    logger.info(f"Metadata saved to {meta_path}")
 
-def main() -> None:
-    try:
-        build_index()
-    except Exception as e:
-        logger.error(str(e))
-        raise
+    return metadata
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        meta = build_index()
+        print(f"✅ Index built successfully with {meta['count']} chunks")
+    except Exception as e:
+        print(f"❌ Failed to build index: {e}")
+        sys.exit(1)

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import os
-import sys
 import json
-from typing import List, Dict, Any
+import sys
+from typing import Dict, List
 
-# Add parent directory to path so we can import utils
+# Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import faiss  # type: ignore
-import numpy as np  # type: ignore
+import faiss
+import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from utils.logging_utils import get_logger
@@ -17,83 +17,114 @@ from utils.logging_utils import get_logger
 
 logger = get_logger("codex.retriever")
 
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-CACHE_DIR = os.path.join(ROOT_DIR, "rag", "cache")
-INDEX_PATH = os.path.join(CACHE_DIR, "index.faiss")
-META_PATH = os.path.join(CACHE_DIR, "meta.json")
-
-# Cache the model to avoid reloading
-_embedding_model = None
+# Global model instance
+_model = None
 
 
-def _get_embedding_model() -> SentenceTransformer:
-    """Get cached embedding model."""
-    global _embedding_model
-    if _embedding_model is None:
+def get_embedding_model():
+    """Get or load embedding model singleton"""
+    global _model
+    if _model is None:
         model_name = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-        _embedding_model = SentenceTransformer(model_name)
-    return _embedding_model
+        try:
+            # Force CPU usage and avoid meta tensor issues
+            _model = SentenceTransformer(model_name, device='cpu')
+            logger.info(f"Loaded embedding model: {model_name}")
+        except Exception as e:
+            logger.error(f"Failed to load model {model_name}: {e}")
+            # Fallback to a more basic model
+            try:
+                _model = SentenceTransformer('paraphrase-MiniLM-L6-v2', device='cpu')
+                logger.info("Loaded fallback model: paraphrase-MiniLM-L6-v2")
+            except Exception as e2:
+                logger.error(f"Failed to load fallback model: {e2}")
+                raise RuntimeError(f"Could not load any embedding model. Original error: {e}")
+    return _model
 
 
-def _embed_query(query: str) -> np.ndarray:
-    """Embed a single query efficiently."""
-    model = _get_embedding_model()
-    embedding = model.encode([query], convert_to_numpy=True, normalize_embeddings=True)
-    return embedding.astype('float32')
+def load_index():
+    """Load FAISS index and metadata"""
+    cache_dir = os.path.join(os.path.dirname(__file__), "cache")
+    index_path = os.path.join(cache_dir, "index.faiss")
+    meta_path = os.path.join(cache_dir, "meta.json")
 
-
-def _load_index_and_meta():
-    if not (os.path.exists(INDEX_PATH) and os.path.exists(META_PATH)):
+    if not os.path.exists(index_path) or not os.path.exists(meta_path):
         raise FileNotFoundError(
-            "Missing index. Build it via 'python rag/build_index_lite.py' or the UI button."
+            f"Index not found. Build it via 'python rag/build_index_lite.py' or the UI button."
         )
-    index = faiss.read_index(INDEX_PATH)
-    with open(META_PATH, "r", encoding="utf-8") as f:
-        meta = json.load(f)
-    return index, meta
+
+    index = faiss.read_index(index_path)
+
+    with open(meta_path, "r", encoding="utf-8") as f:
+        metadata = json.load(f)
+
+    return index, metadata
 
 
-def retrieve(query: str, top_k: int = 4, prioritize_reflection: bool = False) -> Dict[str, Any]:
-    index, meta = _load_index_and_meta()
-    q = _embed_query(query)
-    scores, idxs = index.search(q, max(top_k * 3, top_k))  # search wider, then filter
-    idxs = idxs[0]
-    scores = scores[0]
+def retrieve(query: str, top_k: int = 4, prioritize_reflection: bool = False) -> Dict:
+    """Retrieve relevant chunks for a query"""
+    try:
+        index, metadata = load_index()
+        model = get_embedding_model()
 
-    chunks = meta["chunks"]
+        # Encode query
+        query_embedding = model.encode([query], convert_to_numpy=True, show_progress_bar=False)
+        query_embedding = query_embedding.astype('float32')
 
-    # Build candidates with score and apply optional reflection prioritization
-    candidates = []
-    for i, s in zip(idxs.tolist(), scores.tolist()):
-        if i < 0 or i >= len(chunks):
-            continue
-        c = chunks[i]
-        boost = 1.2 if (prioritize_reflection and c["source"].endswith("self_reflection.md")) else 1.0
-        candidates.append({
-            "text": c["text"],
-            "source": c["source"],
-            "heading": c["heading"],
-            "score": float(s) * boost,
-        })
+        # Normalize for cosine similarity
+        faiss.normalize_L2(query_embedding)
 
-    # Sort by boosted score and take top_k unique by source+heading to add diversity
-    seen_keys = set()
-    results = []
-    for item in sorted(candidates, key=lambda x: x["score"], reverse=True):
-        key = (item["source"], item["heading"])
-        if key in seen_keys:
-            continue
-        seen_keys.add(key)
-        results.append(item)
-        if len(results) >= top_k:
-            break
+        # Search
+        search_k = min(top_k * 2, len(metadata["chunks"]))  # Get more candidates
+        scores, indices = index.search(query_embedding, search_k)
 
-    max_score = max((r["score"] for r in results), default=0.0)
-    avg_score = sum((r["score"] for r in results), 0.0) / max(len(results), 1)
+        results = []
+        seen_sources = set()
 
-    return {
-        "results": results,
-        "max_score": max_score,
-        "avg_score": avg_score,
-        "count": len(results),
-    }
+        for score, idx in zip(scores[0], indices[0]):
+            if idx == -1:  # FAISS returns -1 for not found
+                continue
+
+            chunk = metadata["chunks"][idx]
+            source_path = chunk["source"]
+
+            # Boost reflection documents if requested
+            if prioritize_reflection and "self_reflection" in source_path.lower():
+                score *= 1.2
+
+            # Limit results per source for diversity
+            source_count = sum(1 for r in results if r["source"] == source_path)
+            if source_count >= 2:
+                continue
+
+            results.append({
+                "text": chunk["text"],
+                "source": source_path,
+                "heading": chunk.get("heading", ""),
+                "score": float(score)
+            })
+
+            seen_sources.add(source_path)
+
+            if len(results) >= top_k:
+                break
+
+        # Sort by score (highest first)
+        results.sort(key=lambda x: x["score"], reverse=True)
+
+        return {
+            "results": results,
+            "count": len(results),
+            "max_score": max([r["score"] for r in results]) if results else 0.0,
+            "avg_score": sum([r["score"] for r in results]) / len(results) if results else 0.0,
+        }
+
+    except Exception as e:
+        logger.error(f"Retrieval failed: {e}")
+        return {
+            "results": [],
+            "count": 0,
+            "max_score": 0.0,
+            "avg_score": 0.0,
+            "error": str(e)
+        }

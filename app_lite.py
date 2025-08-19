@@ -202,10 +202,10 @@ def ensure_index_exists():
         with st.spinner("Building index..."):
             try:
                 meta = build_index()
-                st.success(f"✅ Index built successfully with {meta.get('count', 0)} chunks!")
+                st.success(f" Index built successfully with {meta.get('count', 0)} chunks!")
                 st.rerun()  # Restart the app to use the new index
             except Exception as e:
-                st.error(f"❌ Failed to build index: {str(e)}")
+                st.error(f" Failed to build index: {str(e)}")
                 return False
     return True
 
