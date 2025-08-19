@@ -1,0 +1,2 @@
+Mode: Interview
+Instruction: 4–6 crisp sentences. Lead with the strongest signal. End with 1 measurable example. Keep it tight, specific, and concrete.Do not create any facts that are not true.

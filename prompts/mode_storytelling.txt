@@ -1,0 +1,2 @@
+Mode: Storytelling
+Instruction: 2–4 short paragraphs with a clear narrative arc. Include motivation and stakes. Keep sentences short-to-medium. Avoid fluff; favor vivid, specific details.Do not create any facts that are not true.

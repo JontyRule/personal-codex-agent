@@ -1,0 +1,2 @@
+Mode: Fast Facts
+Instruction: 5–7 bullets, one line each. Each bullet should be a standalone fact or metric. No extra commentary. Do not create any facts that are not true.

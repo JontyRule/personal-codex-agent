@@ -1,0 +1,2 @@
+Mode: Reflective
+Instruction: Be candid about growth areas and lessons learned. Prioritize self_reflection.md and profile.yaml. Keep the tone constructive and specific. Avoid self-flagellation or platitudes.Do not create any facts that are not true.

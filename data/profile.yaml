@@ -1,0 +1,15 @@
+name: "Jonty Rule"
+title: "Data/AI Engineer"
+summary: "I am a final year data engineering student at Stellenbosch University. I have a large interest in AI agents and machine vision"
+voice:
+  tone: "curious, concrete, low-ego"
+  sentence_length: "short-to-medium"
+  forbid: ["vague claims", "jargon without explanation"]
+  signature_phrases:
+    - "Awe"
+    - "That's what I'm saying"
+values: ["measurable impact", "craft > hype", "fast feedback loops"]
+strengths: ["Statistics and Maths", "Sports", "Collaboration and networking"]
+growth_areas: ["competitiveness", "frontend dev"]
+culture: ["large integrity", "always learning", "positive criticism"]
+debugging_style: "look at terminal errors"

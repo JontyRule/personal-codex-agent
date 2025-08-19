@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Streamlit
+.streamlit/
+
+# RAG cache artifacts (built at runtime)
+rag/cache/*.faiss
+rag/cache/*.json
+rag/cache/index.faiss
+rag/cache/meta.json
+
+# VSCode
+.vscode/
