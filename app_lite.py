@@ -192,15 +192,36 @@ def maybe_rebuild_index():
     st.success(f"Index rebuilt with {meta['count'] if 'count' in meta else len(meta['chunks'])} chunks.")
 
 
+def ensure_index_exists():
+    """Ensure the index exists, build it if it doesn't"""
+    index_path = os.path.join(ROOT_DIR, "rag", "cache", "index.faiss")
+    meta_path = os.path.join(ROOT_DIR, "rag", "cache", "meta.json")
+    
+    if not os.path.exists(index_path) or not os.path.exists(meta_path):
+        st.info(" Building index for first time... This may take a moment.")
+        with st.spinner("Building index..."):
+            try:
+                meta = build_index()
+                st.success(f"✅ Index built successfully with {meta.get('count', 0)} chunks!")
+                st.rerun()  # Restart the app to use the new index
+            except Exception as e:
+                st.error(f"❌ Failed to build index: {str(e)}")
+                return False
+    return True
+
 def main():
     st.set_page_config(
         page_title="AskJonty", 
-        page_icon="", 
+        page_icon="😎", 
         layout="wide",
         initial_sidebar_state="expanded"
     )
 
     load_dotenv()
+
+    # Ensure index exists before proceeding
+    if not ensure_index_exists():
+        st.stop()
 
     # Get background image as base64
     background_path = os.path.join(ROOT_DIR, "assets", "background.png")
