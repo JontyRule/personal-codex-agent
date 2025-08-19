@@ -17,33 +17,27 @@ from groq import Groq
 
 from utils.loader import load_profile
 from utils.logging_utils import get_logger
-from rag.build_index_lite import build_index
-from rag.retriever_lite import retrieve
-
+# Updated import to use deployment-ready retriever
+from rag.retriever_deployment import retrieve_with_prebuilt as retrieve
 
 logger = get_logger("codex.app")
 
 ROOT_DIR = os.path.dirname(__file__)
 PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts")
 
-
 def get_client() -> Groq:
     key = os.environ.get("GROQ_API_KEY")
     if not key:
         raise RuntimeError("GROQ_API_KEY is not set. Get free API key from https://console.groq.com/")
     
-    # Simple initialization without extra parameters
     try:
         return Groq(api_key=key)
     except Exception as e:
-        # Fallback for older versions
         return Groq(api_key=key)
-
 
 def load_text(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
-
 
 def get_background_image_base64(image_path: str) -> str:
     """Convert image to base64 string for CSS background"""
@@ -52,7 +46,6 @@ def get_background_image_base64(image_path: str) -> str:
             return base64.b64encode(img_file.read()).decode()
     except FileNotFoundError:
         return None
-
 
 def get_dynamic_greeting() -> str:
     """Return a greeting based on time of day"""
@@ -67,10 +60,6 @@ def get_dynamic_greeting() -> str:
         greetings = ["Working late? Let's chat!", "Night owl? I'm here to help!", "Burning the midnight oil? Ask away!"]
     
     return random.choice(greetings)
-
-
-
-
 
 def generate_related_questions(query: str, retrieval_data: Dict) -> List[str]:
     """Generate related questions based on the query and retrieved content"""
@@ -109,7 +98,6 @@ def generate_related_questions(query: str, retrieval_data: Dict) -> List[str]:
     
     return related
 
-
 def typing_animation(text: str, container):
     """Simple typing animation effect"""
     placeholder = container.empty()
@@ -122,7 +110,6 @@ def typing_animation(text: str, container):
     
     placeholder.markdown(text)  # Final text without cursor
 
-
 def get_mode_file(mode: str) -> str:
     mapping = {
         "Interview": "mode_interview.txt",
@@ -134,13 +121,12 @@ def get_mode_file(mode: str) -> str:
     }
     return os.path.join(PROMPTS_DIR, mapping[mode])
 
-
 def compose_messages(question: str, mode: str, reflective: bool) -> tuple[List[Dict[str, str]], Dict]:
     prof = load_profile()
     system = load_text(os.path.join(PROMPTS_DIR, "system_base.txt"))
     mode_text = load_text(get_mode_file(mode))
 
-    # Retrieve context
+    # Retrieve context using pre-built embeddings
     r = retrieve(question, top_k=4, prioritize_reflection=reflective)
 
     # Guardrail: if weak, steer the assistant to refuse gracefully
@@ -169,44 +155,22 @@ def compose_messages(question: str, mode: str, reflective: bool) -> tuple[List[D
 
     return messages, r
 
-
-def render_sources(r):
-    with st.expander("Source Details & Retrieval Scores", expanded=False):
-        st.markdown("**Retrieved chunks with similarity scores:**")
-        for item in r["results"]:
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.markdown(f"**{os.path.basename(item['source'])}#{item['heading']}**")
-            with col2:
-                score_color = "Good" if item['score'] > 0.7 else "OK" if item['score'] > 0.5 else "Low"
-                st.markdown(f"{score_color} {item['score']:.3f}")
-            
-            # Show truncated text in a nice code block
-            text_preview = item["text"][:800] + ("..." if len(item["text"]) > 800 else "")
-            st.code(text_preview, language="markdown")
-
-
-def maybe_rebuild_index():
-    with st.spinner("Rebuilding index..."):
-        meta = build_index()
-    st.success(f"Index rebuilt with {meta['count'] if 'count' in meta else len(meta['chunks'])} chunks.")
-
-
-def ensure_index_exists():
-    """Ensure the index exists, build it if it doesn't"""
+def check_prebuilt_index():
+    """Check if pre-built index exists, show instructions if not"""
     index_path = os.path.join(ROOT_DIR, "rag", "cache", "index.faiss")
     meta_path = os.path.join(ROOT_DIR, "rag", "cache", "meta.json")
     
     if not os.path.exists(index_path) or not os.path.exists(meta_path):
-        st.info(" Building index for first time... This may take a moment.")
-        with st.spinner("Building index..."):
-            try:
-                meta = build_index()
-                st.success(f" Index built successfully with {meta.get('count', 0)} chunks!")
-                st.rerun()  # Restart the app to use the new index
-            except Exception as e:
-                st.error(f" Failed to build index: {str(e)}")
-                return False
+        st.error("**Pre-built index not found!**")
+        st.info("""
+        **To fix this:**
+        1. Run locally: `python scripts/build_embeddings_local.py`
+        2. Commit the generated files in `rag/cache/`
+        3. Redeploy the app
+        
+        This builds the embeddings once locally and includes them in deployment.
+        """)
+        return False
     return True
 
 def main():
@@ -219,8 +183,8 @@ def main():
 
     load_dotenv()
 
-    # Ensure index exists before proceeding
-    if not ensure_index_exists():
+    # Check if pre-built index exists
+    if not check_prebuilt_index():
         st.stop()
 
     # Get background image as base64
@@ -275,8 +239,6 @@ def main():
         }}
         </style>
         """, unsafe_allow_html=True)
-    else:
-        st.info("Background image not found. Please add 'background.png' to the assets folder.")
 
     # Sidebar controls
     with st.sidebar:
@@ -301,26 +263,17 @@ def main():
         
         st.markdown("---")
         
-        rebuild = st.button("Rebuild Index", type="secondary", use_container_width=True)
-        if rebuild:
-            try:
-                maybe_rebuild_index()
-            except Exception as e:
-                st.error(str(e))
-        
-        st.markdown("---")
-        
-        # Model info with dark styling
+        # Model info
         st.markdown("""
         **Current Setup:**
         - **Chat**: Groq API (LLaMA 3)
-        - **Embeddings**: Local (all-MiniLM-L6-v2)
+        - **Embeddings**: Pre-built (deployment-ready)
         - **Cost**: Free!
         """)
 
     # Header with dynamic greeting
     st.markdown("# AskJonty")
-    st.markdown("*AI-powered JontyBot grounded in your Jontys documents, note hallucination is possible*")
+    st.markdown("*AI-powered JontyBot grounded in Jontys documents*")
 
     # Dynamic greeting
     if "greeting_shown" not in st.session_state:
@@ -344,8 +297,7 @@ def main():
             if st.button(q, key=f"q_{i}", use_container_width=True):
                 st.session_state["last_question"] = q
 
-    st.markdown("---")  # Separator line
-
+    st.markdown("---")
     
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
@@ -365,7 +317,7 @@ def main():
                 
                 # Show related questions if available
                 if m.get("related_questions"):
-                    with st.expander("💡 Related Questions", expanded=False):
+                    with st.expander("Related Questions", expanded=False):
                         for rq in m["related_questions"]:
                             if st.button(rq, key=f"related_{hash(rq)}_{len(st.session_state['messages'])}"):
                                 st.session_state["last_question"] = rq
@@ -408,11 +360,11 @@ def main():
                     typing_animation(answer, typing_container)
                     
                     if show_sources:
-                        st.markdown("\n\n" + sources_footer)
+                        st.markdown(f"\n\n**Sources:** {sources_footer}")
                     
                     # Show related questions
                     if related_questions:
-                        with st.expander("💡 You might also ask:", expanded=False):
+                        with st.expander("You might also ask:", expanded=False):
                             for rq in related_questions:
                                 if st.button(rq, key=f"related_new_{hash(rq)}"):
                                     st.session_state["last_question"] = rq
@@ -430,7 +382,6 @@ def main():
             st.error(f"**Error**: {str(e)}")
             if "GROQ_API_KEY" in str(e):
                 st.info("**Get a free Groq API key**: https://console.groq.com/")
-    
 
 if __name__ == "__main__":
     main()
