@@ -33,8 +33,8 @@
 ## Where I want to live
 - I would love to settle in the Western Cape at some point, however I am very keen to travel whilst I am young and am open to work anywhere in the world
 
-## Relationship
-- I am currently in a relationship with a lady who I have absolutely no idea how I managed to land
+## Relationship Girlfriend
+- I am currently in a relationship with a girlfriend who I have absolutely no idea how I managed to land
 
 ## Origin
 - my origin is English, Irish and South African

@@ -247,7 +247,7 @@ def main():
         mode = st.radio(
             "**Response Mode**",
             options=["Interview", "Storytelling", "Fast Facts", "Humble Brag", "Reflective", "Humorous"],
-            index=0,
+            index=5,  # Changed from 0 to 5 to make "Humorous" the default
         )
         
         st.markdown("---")
@@ -273,7 +273,7 @@ def main():
 
     # Header with dynamic greeting
     st.markdown("# AskJonty")
-    st.markdown("*AI-powered JontyBot grounded in Jontys documents*")
+    st.markdown("*AI-powered JontyBot grounded in Jontys documents, HALLUCENATIONS OCCUR, confirm with the real Jonty*")
 
     # Dynamic greeting
     if "greeting_shown" not in st.session_state:
