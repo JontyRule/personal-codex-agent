@@ -9,7 +9,7 @@ voice:
     - "Awe"
     - "That's what I'm saying"
 values: ["measurable impact", "craft > hype", "fast feedback loops"]
-strengths: ["Statistics and Maths", "Sports", "Collaboration and networking"]
-growth_areas: ["competitiveness", "frontend dev"]
+strengths: ["Statistics and Maths", "Sports", "Collaboration", "Creativity"]
+growth_areas: ["competitiveness", "frontend development", "knowledge"]
 culture: ["large integrity", "always learning", "positive criticism"]
 debugging_style: "look at terminal errors"

@@ -62,7 +62,7 @@ Bachelor of Engineering (BEng): Electric and Electronic Engineering (Data Engine
 ### Cornwall Hill College | Centurion, GP  
 **2021**  
 - Average Grade 86%  
-- Prefect (Student leadership)  
+- Prefect (Student leadership) , head of house
 - 1st Team Cricket & Hockey  
 
 ---
@@ -98,3 +98,4 @@ Bachelor of Engineering (BEng): Electric and Electronic Engineering (Data Engine
 - Phone: 0714631264  
 - Email: jontyrule03@gmail.com  
 - Location: Stellenbosch, Western Province, South Africa  
+- Instagram: jonty_rule
