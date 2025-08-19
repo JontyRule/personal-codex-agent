@@ -28,3 +28,6 @@ Result: Implemented dynamic time-based greetings, typing animation for responses
 Result: Simplified source attribution from detailed sections to just filename display.
 
 ## Please help with deployment
+"Please help with deployment using streamlit"
+
+Result: provided steps to deployment
