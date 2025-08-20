@@ -173,6 +173,13 @@ def check_prebuilt_index():
         return False
     return True
 
+# Render deployment fix
+import os
+if "PORT" in os.environ:
+    # Running on Render - configure for external access
+    os.environ.setdefault("STREAMLIT_SERVER_PORT", os.environ["PORT"])
+    os.environ.setdefault("STREAMLIT_SERVER_ADDRESS", "0.0.0.0")
+
 def main():
     st.set_page_config(
         page_title="AskJonty", 
