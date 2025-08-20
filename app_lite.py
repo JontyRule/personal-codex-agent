@@ -303,7 +303,7 @@ def main():
         st.session_state["messages"] = []
 
     # Display chat history
-    for m in st.session_state["messages"]:
+    for msg_idx, m in enumerate(st.session_state["messages"]):
         if m["role"] == "user":
             with st.chat_message("user"):
                 st.markdown(m["content"])
@@ -318,8 +318,9 @@ def main():
                 # Show related questions if available
                 if m.get("related_questions"):
                     with st.expander("Related Questions", expanded=False):
-                        for rq in m["related_questions"]:
-                            if st.button(rq, key=f"related_{hash(rq)}_{len(st.session_state['messages'])}"):
+                        for rq_idx, rq in enumerate(m["related_questions"]):
+                            # Make key unique with message index and question index
+                            if st.button(rq, key=f"related_history_{msg_idx}_{rq_idx}"):
                                 st.session_state["last_question"] = rq
 
     # Input
@@ -365,8 +366,9 @@ def main():
                     # Show related questions
                     if related_questions:
                         with st.expander("You might also ask:", expanded=False):
-                            for rq in related_questions:
-                                if st.button(rq, key=f"related_new_{hash(rq)}"):
+                            for rq_idx, rq in enumerate(related_questions):
+                                # Make key unique for new questions
+                                if st.button(rq, key=f"related_new_{len(st.session_state['messages'])}_{rq_idx}"):
                                     st.session_state["last_question"] = rq
 
             st.session_state["messages"].append(
