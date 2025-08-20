@@ -2,16 +2,17 @@ from __future__ import annotations
 
 import os
 import sys
-import time
+import streamlit as st
 import datetime
 import random
-import base64
+import time
+import uuid
 from typing import List, Dict
+import requests
+import json
 
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-import streamlit as st
 from dotenv import load_dotenv  # type: ignore
 from groq import Groq
 
@@ -24,6 +25,44 @@ logger = get_logger("codex.app")
 
 ROOT_DIR = os.path.dirname(__file__)
 PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts")
+
+def log_question(question: str):
+    """Log question to Google Sheets via Google Forms"""
+    try:
+        # Local logging (for development)
+        logs_dir = os.path.join(ROOT_DIR, "logs")
+        os.makedirs(logs_dir, exist_ok=True)
+        
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        log_file = os.path.join(logs_dir, f"{today}.txt")
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(f"[{timestamp}] {question}\n")
+        
+        # Google Sheets logging (for production)
+        form_url = os.environ.get("GOOGLE_FORM_URL")
+        timestamp_field = os.environ.get("GOOGLE_FORM_TIMESTAMP_FIELD")
+        question_field = os.environ.get("GOOGLE_FORM_QUESTION_FIELD")
+        
+        if form_url and timestamp_field and question_field:
+            timestamp_full = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            form_data = {
+                timestamp_field: timestamp_full,
+                question_field: question
+            }
+            
+            # Submit to Google Form
+            response = requests.post(form_url, data=form_data, timeout=5)
+            
+            if response.status_code == 200:
+                logger.info("Question logged to Google Sheets successfully")
+            else:
+                logger.warning(f"Google Sheets logging failed: {response.status_code}")
+                
+    except Exception as e:
+        logger.error(f"Failed to log question: {e}")
 
 def get_client() -> Groq:
     key = os.environ.get("GROQ_API_KEY")
@@ -195,10 +234,6 @@ def main():
     if not check_prebuilt_index():
         st.stop()
 
-
-
-
-
     # Sidebar controls
     with st.sidebar:
         st.markdown("## Settings")
@@ -206,7 +241,7 @@ def main():
         mode = st.radio(
             "**Response Mode**",
             options=["Interview", "Storytelling", "Fast Facts", "Humble Brag", "Reflective", "Humorous"],
-            index=0,  # This is already set to Interview mode (first option)
+            index=0,
         )
         
         st.markdown("---")
@@ -278,7 +313,6 @@ def main():
                 if m.get("related_questions"):
                     with st.expander("Related Questions", expanded=False):
                         for rq_idx, rq in enumerate(m["related_questions"]):
-                            # Make key unique with message index and question index
                             if st.button(rq, key=f"related_history_{msg_idx}_{rq_idx}"):
                                 st.session_state["last_question"] = rq
 
@@ -288,6 +322,9 @@ def main():
         q = st.session_state.pop("last_question")
 
     if q:
+        # LOG THE QUESTION HERE
+        log_question(q)
+        
         st.session_state["messages"].append({"role": "user", "content": q})
         with st.chat_message("user"):
             st.markdown(q)
@@ -301,48 +338,36 @@ def main():
                 # Show typing animation
                 typing_container = st.empty()
                 with st.spinner("Thinking..."):
-                    resp = client.chat.completions.create(
+                    response = client.chat.completions.create(
                         model=model,
                         messages=messages,
                         temperature=temperature,
                         max_tokens=1024,
                     )
-                    answer = resp.choices[0].message.content or ""
 
-                    sources_footer = " ".join(
-                        [f"[{os.path.basename(x['source'])}]" for x in r["results"]]
-                    )
+                assistant_content = response.choices[0].message.content
 
-                    # Generate related questions
-                    related_questions = generate_related_questions(q, r)
+                # Simple typing effect
+                typing_animation(assistant_content, typing_container)
 
-                    # Display with typing animation
-                    typing_animation(answer, typing_container)
-                    
-                    if show_sources:
-                        st.markdown(f"\n\n**Sources:** {sources_footer}")
-                    
-                    # Show related questions
-                    if related_questions:
-                        with st.expander("You might also ask:", expanded=False):
-                            for rq_idx, rq in enumerate(related_questions):
-                                # Make key unique for new questions
-                                if st.button(rq, key=f"related_new_{len(st.session_state['messages'])}_{rq_idx}"):
-                                    st.session_state["last_question"] = rq
+                # Generate related questions
+                related_questions = generate_related_questions(q, r)
 
-            st.session_state["messages"].append(
-                {
-                    "role": "assistant",
-                    "content": answer,
-                    "sources": sources_footer if show_sources else None,
-                    "retrieval": r,
-                    "related_questions": related_questions,
+                # Store message with metadata
+                msg_data = {
+                    "role": "assistant", 
+                    "content": assistant_content,
+                    "related_questions": related_questions
                 }
-            )
+
+                if show_sources and r.get("results"):
+                    sources = ", ".join([os.path.basename(x['source']) for x in r["results"]])
+                    msg_data["sources"] = sources
+
+                st.session_state["messages"].append(msg_data)
+
         except Exception as e:
-            st.error(f"**Error**: {str(e)}")
-            if "GROQ_API_KEY" in str(e):
-                st.info("**Get a free Groq API key**: https://console.groq.com/")
+            st.error(f"Error: {str(e)}")
 
 if __name__ == "__main__":
     main()

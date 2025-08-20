@@ -28,7 +28,7 @@ cp .env.example .env
 - Place .md files in /data, this is where info for answers will be sourced
 
 ```bash
-python rag/build_index_lite.py
+python scripts/build_embeddings_local.py
 ```
 
 5) **Run the app**:
@@ -37,6 +37,17 @@ python rag/build_index_lite.py
 streamlit run app_lite.py
 ```
 
+```bash
+alternative for macOS issues:
+# Set macOS compatibility environment variables
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+export MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+export OMP_NUM_THREADS=1
+
+# Run the app
+streamlit run app_lite.py
+```
 ## Dataset & Voice
 
 - Edit `data/profile.yaml` to define your tone, values, strengths, and style.
@@ -76,3 +87,6 @@ Found in the /artifacts folder
 ##  License
 
 - MIT (personal use). Customize as needed.
+
+## Logging
+- Questions and timestamps are logged to a google sheet
