@@ -2,8 +2,11 @@ services:
   - type: web
     name: askjonty
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run app_lite.py --server.port $PORT --server.address 0.0.0.0
+    runtime: python-3.11
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements-render.txt
+    startCommand: streamlit run app_lite.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
     envVars:
       - key: GROQ_API_KEY
         sync: false

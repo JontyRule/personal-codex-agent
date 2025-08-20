@@ -1,0 +1,10 @@
+# Requirements optimized for Render deployment
+streamlit==1.36.0
+groq>=0.4.0
+python-dotenv==1.0.1
+PyYAML==6.0.1
+pydantic==2.8.2
+numpy==1.24.3
+sentence-transformers==2.7.0
+# Use older FAISS version that builds reliably on Render
+faiss-cpu==1.7.4
