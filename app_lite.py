@@ -178,7 +178,7 @@ def main():
         page_title="AskJonty", 
         page_icon="😎", 
         layout="wide",
-        initial_sidebar_state="collapsed"
+        initial_sidebar_state="expanded"
     )
 
     load_dotenv()
@@ -247,7 +247,7 @@ def main():
         mode = st.radio(
             "**Response Mode**",
             options=["Interview", "Storytelling", "Fast Facts", "Humble Brag", "Reflective", "Humorous"],
-            index=5,  # Changed from 0 to 5 to make "Humorous" the default
+            index=0,  # This is already set to Interview mode (first option)
         )
         
         st.markdown("---")
@@ -273,7 +273,7 @@ def main():
 
     # Header with dynamic greeting
     st.markdown("# AskJonty")
-    st.markdown("*AI-powered JontyBot grounded in Jontys documents, HALLUCENATIONS OCCUR, confirm with the real Jonty*")
+    st.markdown("*AI-powered JontyBot grounded in real documents, HALLUCINATIONS OCCUR, confirm with the real one*")
 
     # Dynamic greeting
     if "greeting_shown" not in st.session_state:
