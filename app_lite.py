@@ -3,9 +3,9 @@ from __future__ import annotations
 import os
 import sys
 import time
-import base64
 import datetime
 import random
+import base64
 from typing import List, Dict
 
 # Add current directory to path for imports
@@ -39,13 +39,7 @@ def load_text(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
-def get_background_image_base64(image_path: str) -> str:
-    """Convert image to base64 string for CSS background"""
-    try:
-        with open(image_path, "rb") as img_file:
-            return base64.b64encode(img_file.read()).decode()
-    except FileNotFoundError:
-        return None
+
 
 def get_dynamic_greeting() -> str:
     """Return a greeting based on time of day"""
@@ -180,12 +174,19 @@ if "PORT" in os.environ:
     os.environ.setdefault("STREAMLIT_SERVER_PORT", os.environ["PORT"])
     os.environ.setdefault("STREAMLIT_SERVER_ADDRESS", "0.0.0.0")
 
+def get_background_image_base64(image_path: str) -> str:
+    """Convert image to base64 string for CSS background"""
+    try:
+        with open(image_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except FileNotFoundError:
+        return ""
+
 def main():
     st.set_page_config(
         page_title="AskJonty", 
         page_icon="😎", 
-        layout="wide",
-        initial_sidebar_state="collapsed"  # Start collapsed for mobile
+        layout="wide"
     )
 
     load_dotenv()
@@ -194,224 +195,9 @@ def main():
     if not check_prebuilt_index():
         st.stop()
 
-    # Add mobile-friendly CSS
-    st.markdown("""
-    <style>
-    /* Mobile-first responsive design */
-    .stApp {
-        background-color: #f8f9fa;
-    }
-    
-    /* Main container responsive padding */
-    .main .block-container {
-        padding: 1rem;
-        max-width: 100%;
-    }
-    
-    /* Mobile-optimized header */
-    h1 {
-        font-size: 1.8rem !important;
-        text-align: center;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    /* Mobile-friendly buttons */
-    .stButton > button {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-        margin: 0.25rem 0;
-        border-radius: 8px;
-        border: 2px solid #1e3a8a;
-        background: linear-gradient(45deg, #f8f9fa, white);
-        color: #1e3a8a;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    
-    .stButton > button:hover {
-        background: #1e3a8a;
-        color: white;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
-    }
-    
-    /* Chat input mobile optimization */
-    .stChatInputContainer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1rem;
-        background: white;
-        border-top: 1px solid #e9ecef;
-        z-index: 1000;
-    }
-    
-    /* Chat messages mobile-friendly */
-    .stChatMessage {
-        margin: 0.5rem 0;
-        padding: 1rem;
-        border-radius: 10px;
-        background: white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-    
-    /* Sidebar mobile optimization */
-    .css-1d391kg {
-        background-color: rgba(255, 255, 255, 0.95) !important;
-    }
-    
-    /* Quick start questions responsive grid */
-    .element-container .stColumns {
-        gap: 0.5rem;
-    }
-    
-    /* Mobile typography */
-    .stMarkdown p {
-        font-size: 0.95rem;
-        line-height: 1.6;
-    }
-    
-    /* Expander mobile-friendly */
-    .streamlit-expanderHeader {
-        font-size: 0.9rem;
-        padding: 0.75rem;
-    }
-    
-    /* Sources display mobile */
-    .stMarkdown strong {
-        color: #1e3a8a;
-        font-size: 0.85rem;
-    }
-    
-    /* Mobile viewport adjustments */
-    @media (max-width: 768px) {
-        .main .block-container {
-            padding: 0.5rem;
-        }
-        
-        h1 {
-            font-size: 1.5rem !important;
-        }
-        
-        .stButton > button {
-            padding: 0.6rem 0.8rem;
-            font-size: 0.85rem;
-        }
-        
-        .stChatMessage {
-            padding: 0.75rem;
-            font-size: 0.9rem;
-        }
-        
-        /* Hide sidebar by default on mobile */
-        .css-1d391kg {
-            transform: translateX(-100%);
-        }
-    }
-    
-    /* Very small screens */
-    @media (max-width: 480px) {
-        .main .block-container {
-            padding: 0.25rem;
-        }
-        
-        h1 {
-            font-size: 1.3rem !important;
-        }
-        
-        .stButton > button {
-            padding: 0.5rem;
-            font-size: 0.8rem;
-        }
-    }
-    
-    /* Landscape mobile optimization */
-    @media (max-height: 500px) and (orientation: landscape) {
-        .main .block-container {
-            padding: 0.5rem;
-        }
-        
-        h1 {
-            font-size: 1.2rem !important;
-            margin-bottom: 0.25rem !important;
-        }
-    }
-    
-    /* Touch-friendly interactive elements */
-    .stRadio > div {
-        gap: 0.75rem;
-    }
-    
-    .stRadio label {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-    
-    /* Improve readability on mobile */
-    .stChatMessage [data-testid="column"] {
-        padding: 0.5rem;
-    }
-    
-    /* Mobile-optimized spacing */
-    .element-container {
-        margin-bottom: 1rem;
-    }
-    
-    /* Better mobile input */
-    .stTextInput input {
-        font-size: 16px; /* Prevents zoom on iOS */
-        padding: 0.75rem;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
-    # Get background image as base64 (only for desktop)
-    background_path = os.path.join(ROOT_DIR, "assets", "background.png")
-    background_b64 = get_background_image_base64(background_path)
-    
-    # Add subtle background for desktop only
-    if background_b64:
-        st.markdown(f"""
-        <style>
-        @media (min-width: 769px) {{
-            .stApp {{
-                background-image: url('data:image/png;base64,{background_b64}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-            }}
-            
-            .stApp::before {{
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: url('data:image/png;base64,{background_b64}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-                opacity: 0.1;
-                z-index: -1;
-                pointer-events: none;
-            }}
-            
-            .main .block-container {{
-                background-color: rgba(255, 255, 255, 0.9);
-                border-radius: 10px;
-                padding: 2rem;
-                margin-top: 1rem;
-            }}
-        }}
-        </style>
-        """, unsafe_allow_html=True)
+
+
 
     # Sidebar controls
     with st.sidebar:
@@ -463,19 +249,12 @@ def main():
         "Where do you see yourself in 10 years?",
     ]
 
-    # Mobile-friendly button layout - stack on mobile, grid on desktop
-    # Check if we should use mobile layout (this is a simple heuristic)
-    cols_per_row = 2 if len(sample_qs) > 3 else len(sample_qs)
-    
-    # Create rows of buttons for better mobile experience
-    for i in range(0, len(sample_qs), cols_per_row):
-        cols = st.columns(cols_per_row)
-        for j, col in enumerate(cols):
-            if i + j < len(sample_qs):
-                q = sample_qs[i + j]
-                with col:
-                    if st.button(q, key=f"q_{i+j}", use_container_width=True):
-                        st.session_state["last_question"] = q
+    # Create button layout for quick start questions
+    cols = st.columns(len(sample_qs))
+    for i, (col, q) in enumerate(zip(cols, sample_qs)):
+        with col:
+            if st.button(q, key=f"q_{i}"):
+                st.session_state["last_question"] = q
 
     st.markdown("---")
     
