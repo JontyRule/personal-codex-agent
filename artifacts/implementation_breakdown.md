@@ -16,7 +16,7 @@ rag/retriever_lite.py: 90% AI | 10% Human
 - AI: Similarity search, confidence scoring, result filtering
 - Human: Quality standards definition
 
-rag/splitter.py: 89% AI | 10% Human
+rag/splitter.py: 90% AI | 10% Human
 - AI: Markdown parsing, chunk optimization, overlap management
 - Human: Target chunk size constraints
 

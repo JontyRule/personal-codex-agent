@@ -7,21 +7,23 @@ A simple, local-first Streamlit chatbot that answers evaluator questions about a
 1) **Install dependencies** (Python 3.11+):
 
 ```bash
+cd personal-codex-agent
 python -m venv .venv
 source .venv/bin/activate (macOS)
-pip install -r requirements.txt
+pip install -r requirements.txt #(requirements-dev.txt for local deployment)
 ```
 
 2) **Get free Groq API key**:
    - Go to https://console.groq.com/
    - Sign up (free)
    - Create API key
+   - also create a google form with Timestamo and Question fields
 
 3) **Configure environment**:
 
 ```bash
 cp .env.example .env
-# Edit .env and add your GROQ_API_KEY
+# Edit .env and add your `GROQ_API_KEY`, `GOOGLE_FORM_URL`, `GOOGLE_FORM_TIMESTAMP_FIELD`, `GOOGLE_FORM_QUESTION_FIELD` 
 ```
 
 4) **Build the index**:
@@ -55,8 +57,7 @@ streamlit run app_lite.py
 
 **Components:**
 - **Retriever Agent**: FAISS cosine similarity over chunked docs (sentence-transformers)
-- **Voice Agent**: Composes prompts with system + profile + mode + context  
-- **Reflection Agent**: Optional bias toward `self_reflection.md`
+- **Chat Agent**: Composes prompts with system + profile + mode + context  
 - **Chat Model**: Groq API with LLaMA 3 (free tier)
 
 ## Guardrails
@@ -71,8 +72,8 @@ streamlit run app_lite.py
 **Streamlit Community Cloud:**
 1. Push this repo to GitHub
 2. Connect to Streamlit Cloud
-3. Set `GROQ_API_KEY` in secrets
-4. Deploy `app_lite.py`
+3. Set `GROQ_API_KEY`, `GOOGLE_FORM_URL`, `GOOGLE_FORM_TIMESTAMP_FIELD`, `GOOGLE_FORM_QUESTION_FIELD`  in secrets
+4. Deploy `app_lite.py` on streamlit
 
 ## Show your thinking artifacts
 Found in the /artifacts folder 
@@ -89,4 +90,4 @@ Found in the /artifacts folder
 - MIT (personal use). Customize as needed.
 
 ## Logging
-- Questions and timestamps are logged to a google sheet
+- Questions and timestamps are logged to a google form/sheet

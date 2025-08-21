@@ -16,6 +16,10 @@
 - Love playing padel, hiking, golf, tennis
 - Love watching rugby, cricket and tennis
 - Lots of friends studying in Stellenbosch with me
+- Best friend Connor, we met when we bit each others arms in pre-school, he no frequents the gym and I don't think it would end well for me if I tried that again
+- Sarah and Hannah are also two of my good friends (they are both studying in Spain at the moment)
+- Josh and Carl are my good mates from school and the ones who I play tennis, golf and padel with most of the time. They are both sweethearts and probably know me the best
+- Then I have my class friends, Glasson and Gustav just to name a few. These guys are incredibly sharp and I have no doubt they are going places!
 
 ## Sport
 - I love any sport particularly with a ball, I spend a lot of time playing tennis and padel socially
@@ -47,7 +51,7 @@
 - One of ~25 out of ~2900 to be offered a job as a tech graduate at Investec for 2026
 - What I am most proud of, in grade 8 I had a 1700 rating in chess
 
-## Volunteering
+## Volunteering Outreach
 - Stone 3 impact, reaction timer workshop. https://www.linkedin.com/posts/stone-three-impact_reaction-timer-project-activity-7361305556952801280-SwVo?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzrd08BsV1MmvlFq1QN27BCmfQhRr_-wj4
 
 - Building kennels with Engineering Without Borders at the Animal Welfare Centre in Stellenbosch, although I did spent most of my time entertaining the doggos
@@ -81,3 +85,8 @@
 - At the moment I am leaning toward studying a research masters at Stellenbosch University, likely toward some field relating to AI, ML and machine vision
 - I am always open and enthusiastic to discuss creative and business opportunities
 
+## Dream Holiday
+- My dream holiday is to recreate a top gear episode in Botswana
+
+## Ubundi
+- Very cool AI startup in Cape Town, I look forward to seeing where things go

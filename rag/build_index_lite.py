@@ -121,7 +121,7 @@ def build_index() -> Dict:
 if __name__ == "__main__":
     try:
         meta = build_index()
-        print(f"✅ Index built successfully with {meta['count']} chunks")
+        print(f" Index built successfully with {meta['count']} chunks")
     except Exception as e:
-        print(f"❌ Failed to build index: {e}")
+        print(f" Failed to build index: {e}")
         sys.exit(1)
